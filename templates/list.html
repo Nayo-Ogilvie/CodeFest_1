@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Python Flask App</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/stylesheets/style.css">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+
+    <style>
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+    </style>
+
+
+
+
+  </head>
+
+ <body>
+
+
+ <nav class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand bold center">Welcome to IBM Bluemix Data Store !!!</a>
+
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="/">Home</a></li>
+          </ul>
+
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+
+    <div class="container">
+
+       <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">List of files present on IBM Bluemix:</h3>
+            </div>
+
+            <div class="panel-body">
+               <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Filename</th>
+                    <th>Version number</th>
+
+                  </tr>
+                </thead>
+                  <tbody>
+                    {% for n in files %}
+
+                      <tr>
+                        <td>{{ n.filename }}</td>
+                        <td>{{ n.versionnumber }}</td>
+                        <td><a href="{{ url_for('download',filename=n.filename,versionnumber=n.versionnumber)}}" class="list-group-item">Download</a></td>
+                        <td><a href="{{ url_for('delete',filename=n.filename,versionnumber=n.versionnumber)}}" class="list-group-item">Delete</a></td>
+                      </tr>
+
+                    {% endfor %}
+                </tbody>
+              </table>
+
+
+                </div>
+            </div>
+
+
+        </div>
+
+</body>
+</html>
