@@ -16,16 +16,15 @@
 # http://python-cloudant.readthedocs.org/en/latest/getting_started.html
 # https://github.com/IBM-Bluemix/bluemix-python-flask-sample
 import os.path, time
-from flask import Flask, request, redirect, url_for, flash, render_template
-import gnupg
-from cloudant.account import Cloudant
+from flask import Flask, request, render_template, send_file
+import datetime
+import cloudant
 import hashlib
 
 app = Flask(__name__)
 
-#Python-gnupg code
-gpg = gnupg.GPG(gnupghome='/home/jeet/Cloud/gpghome')
-client = Cloudant('3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix', 'e2c3db62406e0c81aa32fda4a99f448434c728ab8ae3b80171c4c693c8c6e15e', url='https://3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix:e2c3db62406e0c81aa32fda4a99f448434c728ab8ae3b80171c4c693c8c6e15e@3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix.cloudant.com')
+
+client = cloudant.Cloudant('3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix', 'e2c3db62406e0c81aa32fda4a99f448434c728ab8ae3b80171c4c693c8c6e15e', url='https://3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix:e2c3db62406e0c81aa32fda4a99f448434c728ab8ae3b80171c4c693c8c6e15e@3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix.cloudant.com')
 # or using url
 # client = Cloudant(USERNAME, PASSWORD, url='https://acct.cloudant.com')
 
@@ -33,6 +32,7 @@ client = Cloudant('3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix', 'e2c3db62406e0
 client.connect()
 
 # Open an existing database
+
 my_database = client['my_database']
 
 @app.route('/')
@@ -45,99 +45,100 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         filename=file.filename
-        file_contents = file.stream.read().decode("utf-8")
-        print file_contents
-        hashvalue = hashlib.md5(file_contents).hexdigest()
-        lastmodifieddate = '12/01/2015'
-        #lastmodifieddate = time.ctime(os.path.getmtime(filename))
-        wd = os.path.dirname(os.path.abspath(filename))
-        print wd
 
-        filenamematched = 0
-        hashvaluematched = 0
+        if filename != "":
+            file_contents = file.stream.read().decode("utf-8")
+            #find out the hash code for file contents
+            hashvalue = hashlib.md5(file_contents).hexdigest()
+            lastmodifieddate = time.strftime("%x")
 
-        for document in my_database:
-            print document['filename']
-            print filename
-            if document['filename'] == filename:
-                filenamematched = 1
-                versionnumber = document['versionnumber']
-                hashvalueofcloudantdoccontents = hashlib.md5(document['filecontents']).hexdigest()
-                if hashvalueofcloudantdoccontents == hashvalue:
-                    hashvaluematched = 1
 
-        if filenamematched == 0:
-            fileinfo = {
-                    'hashvalue': hashvalue,
-                    'filename': filename,
-                    'versionnumber': 1,
-                    'lastmodifieddate': lastmodifieddate,
-                    'filecontents': file_contents
-                    }
-            my_database.create_document(fileinfo)
-            result='File created and uploaded to IBM Bluemix successfully.'
-            return render_template('result.html',result=result)
+            print lastmodifieddate
 
-        if filenamematched == 1:
-            if hashvaluematched == 0:
+            filenamematched = 0
+            hashvaluematched = 0
+            #iterate through each document in my_database
+            for document in my_database:
+                if document['filename'] == filename:
+                    filenamematched = 1
+                    versionnumber = document['versionnumber']
+                    hashvalueofcloudantdoccontents = hashlib.md5(document['filecontents']).hexdigest()
+                    if hashvalueofcloudantdoccontents == hashvalue:
+                        hashvaluematched = 1
+            #if file name not matched
+            if filenamematched == 0:
                 fileinfo = {
                         'hashvalue': hashvalue,
                         'filename': filename,
-                        'versionnumber': versionnumber+1,
+                        'versionnumber': 1,
                         'lastmodifieddate': lastmodifieddate,
                         'filecontents': file_contents
                         }
                 my_database.create_document(fileinfo)
-                result='File name already exists, so new file version created and uploaded to IBM Bluemix successfully.'
+                result='File created and uploaded to IBM Bluemix successfully.'
                 return render_template('result.html',result=result)
+            #if file name is matched but contents are different
+            if filenamematched == 1:
+                if hashvaluematched == 0:
+                    fileinfo = {
+                            'hashvalue': hashvalue,
+                            'filename': filename,
+                            'versionnumber': versionnumber+1,
+                            'lastmodifieddate': lastmodifieddate,
+                            'filecontents': file_contents
+                            }
+                    my_database.create_document(fileinfo)
+                    result='File name already exists, so new file version created and uploaded to IBM Bluemix successfully.'
+                    return render_template('result.html',result=result)
 
-        result='File already exists on the IBM Bluemix.'
-        return render_template('result.html',result=result)
+            #if filename and filecontents already exits
+            result='File already exists on the IBM Bluemix.'
+            return render_template('result.html',result=result)
+        else:
+            return render_template('result.html',result="Please select the file.")
 
     else:
         return 'Error'
-    #return redirect(url_for('join'))
-
-
-@app.route('/join')
-def join():
-    return 'hihi'
 
 @app.route('/list', methods=['GET', 'POST'])
 def list():
     files = []
     for document in my_database:
         fileinfo = {}
+        #save the required details into fileinfo json
         fileinfo['filename'] = document['filename']
         fileinfo['versionnumber'] = document['versionnumber']
+        fileinfo['lastmodifieddate'] = document['lastmodifieddate']
         files.append(fileinfo)
 
     return render_template('list.html',files=files)
 
 @app.route('/download', methods=['GET', 'POST'])
 def download():
-    filename_download=request.args.get('filename')
-    versionnumber_download=request.args.get('versionnumber')
+    #filename=request.args.get('filename')
+    filename, file_extension = os.path.splitext(request.args.get('filename'))
+    versionnumber=request.args.get('versionnumber')
 
     for document in my_database:
-        print document['filename']
-        print document['versionnumber']
-        print filename_download
-        print versionnumber_download
-        if document['filename'] == filename_download:
-            print 'jeet2'
-            if int(document['versionnumber']) == int(versionnumber_download):
-                print "jeet"
-                with open(filename_download+versionnumber_download, 'w') as my_example:
-                    my_example.write(document['filecontents'])
-                    result = "File '" +filename_download + "' with version number '" + versionnumber_download+ "' downloaded successfully."
+        if document['filename'] == filename+file_extension:
+            if int(document['versionnumber']) == int(versionnumber):
+                #file get saved into home directory of Ubuntu
+                filecontents=document['filecontents']
+                result= "File '" + filename+file_extension + "' with version number '" + versionnumber + "' downloaded successfully and saved as '" + filename+versionnumber+file_extension + "'"
 
-    return render_template('result.html',result=result)
+    file_download = open(filename+file_extension, 'wb')
+
+    file_download.write(filecontents);
+    file_download.close()
+    file_download = open('/home/jeet/'+filename+file_extension, 'rb')
+
+    return send_file(file_download.name, as_attachment=True)
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
     filename_delete=request.args.get('filename')
     versionnumber_delete=request.args.get('versionnumber')
+    #iterate through my_database, if filename and version number matches, delete the file.
     for document in my_database:
         if document['filename'] == filename_delete:
             if int(document['versionnumber']) == int(versionnumber_delete):

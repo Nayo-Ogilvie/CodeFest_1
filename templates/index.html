@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
+<head>
     <title>Python Flask App</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="static/stylesheets/style.css">
-     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-
 
     <style>
         .btn-file {
@@ -34,99 +32,79 @@
             display: block;
         }
     </style>
+</head>
 
+<body>
 
-
-
-  </head>
-
- <body>
-
-
- <nav class="navbar navbar-default navbar-static-top">
-      <div class="container">
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand bold center">Welcome to IBM Bluemix Data Store !!!</a>
 
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li class="active"><a href="/">Home</a></li>
-          </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="/">Home</a></li>
+            </ul>
 
         </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+    </div>
+</nav>
+<div class="container">
 
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">1. Upload your file:</h3>
+        </div>
 
+        <div class="panel-body">
+            <form role="form" method="post" action="/upload" enctype=multipart/form-data>
 
-    <div class="container">
+                <div class="form-group">
+                    <label for="txtPost">File</label>
 
-      <!-- Main component for a primary marketing message or call to action -->
-
-
-
-
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">1. Upload your file:</h3>
-            </div>
-
-            <div class="panel-body">
-             <form role="form" method="post" action="/upload" enctype=multipart/form-data>
-
-            <div class="form-group">
-                <label for="txtPost">File</label>
-
-                <div class="input-group">
+                    <div class="input-group">
                     <span class="input-group-btn">
                     <span class="btn btn-primary btn-file">
                         Browse&hellip; <input type="file" id="fileupload" name="file" multiple>
                     </span>
                     </span>
-                    <input type="text" class="form-control" readonly>
+                        <input type="text" class="form-control" readonly>
+                    </div>
+
                 </div>
+                <!-- Button -->
+                <div class="form-group">
 
-            </div>
-            <!-- Button -->
-            <div class="form-group">
+                    <p class="text-center">
+                        <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="Upload" />
+                    </p>
+                </div>
+            </form>
 
-                <p class="text-center">
-                    <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="Upload" />
-                </p>
-            </div>
-        </form>
-
-            </div>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">2. List files present on IBM Bluemix:</h3>
         </div>
 
+        <div class="panel-body">
+            <form role="form" method="post" action="/list">
+                <!-- Button -->
+                <div class="form-group">
 
+                    <p class="text-center">
+                        <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="List" />
+                    </p>
+                </div>
+            </form>
 
-            <div class="panel panel-info">
-            <div class="panel-heading">
-                <h3 class="panel-title">2. List files present on IBM Bluemix:</h3>
-            </div>
-
-            <div class="panel-body">
- <form role="form" method="post" action="/list">
-
-
-            <!-- Button -->
-            <div class="form-group">
-
-                <p class="text-center">
-                    <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="List" />
-                </p>
-            </div>
-        </form>
-
-
-            </div>
         </div>
+    </div>
 
-
-    </div> <!-- /container -->
-
+</div> <!-- /container -->
 
 </body>
 </html>
