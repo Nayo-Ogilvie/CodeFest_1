@@ -24,7 +24,7 @@ import hashlib
 app = Flask(__name__)
 
 
-client = cloudant.Cloudant('3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix', 'e2c3db62406e0c81aa32fda4a99f448434c728ab8ae3b80171c4c693c8c6e15e', url='https://3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix:e2c3db62406e0c81aa32fda4a99f448434c728ab8ae3b80171c4c693c8c6e15e@3cc6ceb4-cd52-47f8-81c7-f0f3505f6cf8-bluemix.cloudant.com')
+client = cloudant.Cloudant('', '', url='https:/')
 # or using url
 # client = Cloudant(USERNAME, PASSWORD, url='https://acct.cloudant.com')
 
